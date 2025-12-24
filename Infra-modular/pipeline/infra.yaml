@@ -1,0 +1,38 @@
+trigger: none
+
+pool: meetu-raj3
+
+stages:
+  - stage: initvalidateplan
+    displayName: init and plan
+    jobs:
+      - job: initplan
+        displayName: init and plan
+        steps:
+        - task: TerraformTask@5
+          displayName: terraform initialization
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/parent'
+            backendAzureRmUseEntraIdForAuthentication: false
+            backendServiceArm: 'meetusc'
+            backendAzureRmOverrideSubscriptionID: '987e5914-628e-4e9a-8c8f-d7fa87735002'
+            backendAzureRmResourceGroupName: 'kannu_rg'
+            backendAzureRmStorageAccountName: 'kannukastorage'
+            backendAzureRmContainerName: 'backendstorage'
+            backendAzureRmKey: 'assignment.tfstate'
+        - task: TerraformTask@5
+          displayName: terraform plan
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/parent'
+            environmentServiceNameAzureRM: 'meetusc'
+        - task: TerraformTask@5
+          displayName: Terraform apply
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/parent'
+            environmentServiceNameAzureRM: 'meetusc'
